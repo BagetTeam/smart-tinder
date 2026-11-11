@@ -131,6 +131,17 @@ export default function Profile() {
         </div>
       </section>
 
+      <section className="mt-3 rounded-3xl border border-dashed border-white/15 p-4">
+        <div className="text-sm font-semibold">Demo tools</div>
+        <p className="mt-1 text-xs text-white/45">
+          Dailies unlock once per day. Jump ahead to play another day's puzzles and watch your IQ estimate and bracket evolve.
+          {s.dayOffset > 0 && ` (Currently ${s.dayOffset} day${s.dayOffset > 1 ? 's' : ''} ahead.)`}
+        </p>
+        <Button variant="ghost" className="mt-3 w-full" onClick={() => { s.skipDay(); s.showToast('Fast-forwarded to tomorrow ☀️') }}>
+          Skip to tomorrow
+        </Button>
+      </section>
+
       <div className="mt-6 flex flex-col gap-2">
         <Button variant="ghost" onClick={() => setEditing(true)}>
           Edit profile

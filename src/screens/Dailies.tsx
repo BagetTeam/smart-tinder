@@ -59,7 +59,7 @@ export default function Dailies() {
   const doneCount = Object.keys(today).length
   const todayDelta = Object.values(today).reduce((s, r) => s + (r!.iqAfter - r!.iqBefore), 0)
   const streak = streakOf(dailies)
-  const dateLabel = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
+  const dateLabel = new Date(`${day}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
 
   return (
     <div className="relative h-full">

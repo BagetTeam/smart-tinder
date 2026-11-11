@@ -53,8 +53,14 @@ export function gaussian(rng: Rng): number {
 
 export const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x))
 
+/** Demo-only: shift "today" forward so a reviewer can play several days of dailies in one sitting. */
+let dayOffset = 0
+export const setDayOffset = (n: number) => (dayOffset = n)
+
 /** Local-date key, e.g. 2026-11-11 — the "daily" boundary. */
-export function todayKey(d = new Date()): string {
+export function todayKey(base = new Date()): string {
+  const d = new Date(base)
+  d.setDate(d.getDate() + dayOffset)
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')

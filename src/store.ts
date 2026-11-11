@@ -13,7 +13,7 @@ import {
   scoreGame,
   showMeIncludes,
 } from './lib/engine'
-import { gaussian, mulberry32, todayKey } from './lib/rng'
+import { gaussian, mulberry32, setDayOffset, todayKey } from './lib/rng'
 import type { GameId, GameResult, HistoryPoint, Match, Profile, SwipeDir, UserProfile } from './lib/types'
 
 export type Tab = 'discover' | 'dailies' | 'matches' | 'profile'
@@ -44,6 +44,7 @@ interface State {
   superLikeDay: string
   lastImpressionDay: string
   xray: boolean
+  dayOffset: number
 
   tab: Tab
   openChat: string | null
@@ -69,6 +70,7 @@ interface Actions {
   recordGame: (game: GameId, metric: number, dnf: boolean) => GameResult
   toggleXray: () => void
   resetAll: () => void
+  skipDay: () => void
 }
 
 const initial: State = {
@@ -91,6 +93,7 @@ const initial: State = {
   superLikeDay: '',
   lastImpressionDay: '',
   xray: false,
+  dayOffset: 0,
   tab: 'discover',
   openChat: null,
   newMatch: null,
@@ -307,11 +310,22 @@ export const useStore = create<State & Actions>()(
           return result
         },
 
-        resetAll: () => set({ ...initial }),
+        resetAll: () => {
+          setDayOffset(0)
+          set({ ...initial })
+        },
+
+        skipDay: () => {
+          const dayOffset = get().dayOffset + 1
+          setDayOffset(dayOffset)
+          set({ dayOffset })
+          get().dailyTick()
+        },
       }
     },
     {
       name: 'iqupid-v1',
+      onRehydrateStorage: () => (s) => s && setDayOffset(s.dayOffset ?? 0),
       partialize: ({ tab: _t, openChat: _o, newMatch: _n, toast: _to, typing: _ty, ...rest }) => rest,
     },
   ),
