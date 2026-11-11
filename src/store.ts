@@ -158,6 +158,9 @@ export const useStore = create<State & Actions>()(
         if (text !== null) setTimeout(() => setTyping(true), 600)
         setTimeout(
           () => {
+            // If you already broke the ice, they answer you instead of sending a generic opener.
+            const convo = get().matches.find((m) => m.profileId === profileId)
+            if (!convo || (text === null && convo.messages.length > 0)) return
             const msg = text === null ? opener(rng, p) : replyTo(rng, p, text)
             set((s) => ({
               typing: { ...s.typing, [profileId]: false },

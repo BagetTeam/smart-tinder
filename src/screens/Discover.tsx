@@ -142,7 +142,7 @@ export default function Discover() {
           <>
             <ProfileDetail profile={infoProfile} onClose={() => setInfo(null)} looks={profileLooks(s, infoProfile)} xray={xray} shared={shared(infoProfile.interests)} />
             {queue[0] === infoProfile.id && (
-              <div className="sticky bottom-0 flex justify-center gap-5 bg-gradient-to-t from-ink-900 via-ink-900 to-transparent pt-6 pb-6">
+              <div className="pointer-events-none sticky bottom-0 flex justify-center gap-5 pb-6 [&>*]:pointer-events-auto">
                 <ActionButton onClick={() => { setInfo(null); setTimeout(() => trigger('pass'), 250) }} className="h-14 w-14 text-rose-500 ring-rose-500/30" label="Pass">
                   <X className="h-7 w-7" strokeWidth={3} />
                 </ActionButton>
