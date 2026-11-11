@@ -3,7 +3,7 @@ import { Crown, X } from 'lucide-react'
 import { generateQueens } from './generators'
 import type { GameProps } from './types'
 
-const COLORS = ['#c4b5fd', '#fda4af', '#93c5fd', '#fcd34d', '#86efac', '#fdba74', '#a5f3fc', '#f0abfc', '#d9f99d', '#cbd5e1']
+const COLORS = ['#bba3f2', '#fbb37a', '#96bdf9', '#b3dfa0', '#dedede', '#ff9b8f', '#f8de7e', '#dfc6a3', '#f3a6d4', '#86d9cf']
 
 /** 0 = empty, 1 = cross, 2 = crown */
 type Mark = 0 | 1 | 2

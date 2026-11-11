@@ -16,8 +16,8 @@ export function Photo({ src, name, className = '', rounded = '' }: { src: string
   const grad = GRADS[(name.charCodeAt(0) + name.length) % GRADS.length]
   if (!src || failed)
     return (
-      <div className={`flex items-center justify-center bg-gradient-to-br ${grad} ${rounded} ${className}`}>
-        <span className="text-[min(40%,6rem)] font-black text-white/90 drop-shadow">{name.slice(0, 1).toUpperCase()}</span>
+      <div className={`@container flex items-center justify-center bg-gradient-to-br ${grad} ${rounded} ${className}`}>
+        <span className="text-[42cqw] leading-none font-black text-white/90 drop-shadow">{name.slice(0, 1).toUpperCase()}</span>
       </div>
     )
   return (

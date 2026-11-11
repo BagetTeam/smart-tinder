@@ -159,10 +159,7 @@ function GameCard({ meta, index, result, onPlay, onView }: { meta: GameMeta; ind
         <Icon className="h-8 w-8 text-white" strokeWidth={2.2} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-bold">{meta.name}</span>
-          <span className="truncate text-[10px] font-medium text-white/35">{meta.inspiredBy}-style</span>
-        </div>
+        <div className="font-bold">{meta.name}</div>
         <div className="truncate text-sm text-white/55">{meta.tagline}</div>
         {result && (
           <div className="mt-1 flex items-center gap-2 text-xs">
@@ -253,6 +250,7 @@ function GameRunner({ game, onClose }: { game: GameId; onClose: () => void }) {
             </div>
             <h2 className="mt-6 text-3xl font-black">{meta.name}</h2>
             <p className="mt-2 text-white/60">{meta.tagline}</p>
+            <p className="mt-1 text-xs text-white/35">Inspired by {meta.inspiredBy}</p>
             <div className="mt-6 w-full space-y-2 rounded-2xl bg-white/5 p-4 text-left text-sm text-white/70 ring-1 ring-white/10">
               <div className="flex justify-between"><span>Ranked against</span><b className="text-white">{players} players</b></div>
               <div className="flex justify-between"><span>Scored on</span><b className="text-white">{meta.unit === 'time' ? 'Solve time' : `Correct answers in ${meta.timeLimit}s`}</b></div>
