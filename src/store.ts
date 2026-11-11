@@ -13,7 +13,7 @@ import {
   scoreGame,
   showMeIncludes,
 } from './lib/engine'
-import { clamp, gaussian, mulberry32, shuffle, todayKey } from './lib/rng'
+import { gaussian, mulberry32, todayKey } from './lib/rng'
 import type { GameId, GameResult, HistoryPoint, Match, Profile, SwipeDir, UserProfile } from './lib/types'
 
 export type Tab = 'discover' | 'dailies' | 'matches' | 'profile'
@@ -38,6 +38,8 @@ interface State {
   likedYou: Record<string, number>
   matches: Match[]
   dailies: Record<string, Partial<Record<GameId, GameResult>>>
+  /** When each daily was started ("day:game" -> ms). Persisted so a reload doesn't reset the clock. */
+  gameStarts: Record<string, number>
   superLikesLeft: number
   superLikeDay: string
   lastImpressionDay: string
@@ -47,6 +49,7 @@ interface State {
   openChat: string | null
   newMatch: string | null
   toast: string | null
+  typing: Record<string, boolean>
 }
 
 interface Actions {
@@ -62,6 +65,7 @@ interface Actions {
   dailyTick: () => void
   sendMessage: (profileId: string, text: string) => void
   markRead: (profileId: string) => void
+  startGame: (game: GameId) => number
   recordGame: (game: GameId, metric: number, dnf: boolean) => GameResult
   toggleXray: () => void
   resetAll: () => void
@@ -82,6 +86,7 @@ const initial: State = {
   likedYou: {},
   matches: [],
   dailies: {},
+  gameStarts: {},
   superLikesLeft: 1,
   superLikeDay: '',
   lastImpressionDay: '',
@@ -90,6 +95,7 @@ const initial: State = {
   openChat: null,
   newMatch: null,
   toast: null,
+  typing: {},
 }
 
 export const profileLooks = (s: Pick<State, 'profileElo'>, p: Profile) => s.profileElo[p.id] ?? p.looksElo
@@ -148,10 +154,13 @@ export const useStore = create<State & Actions>()(
 
       const scheduleReply = (profileId: string, text: string | null) => {
         const p = PROFILE_BY_ID[profileId]
+        const setTyping = (v: boolean) => set((s) => ({ typing: { ...s.typing, [profileId]: v } }))
+        if (text !== null) setTimeout(() => setTyping(true), 600)
         setTimeout(
           () => {
             const msg = text === null ? opener(rng, p) : replyTo(rng, p, text)
             set((s) => ({
+              typing: { ...s.typing, [profileId]: false },
               matches: s.matches.map((m) =>
                 m.profileId === profileId
                   ? {
@@ -270,6 +279,15 @@ export const useStore = create<State & Actions>()(
         markRead: (profileId) =>
           set((s) => ({ matches: s.matches.map((m) => (m.profileId === profileId ? { ...m, unread: 0 } : m)) })),
 
+        startGame: (game) => {
+          const key = `${todayKey()}:${game}`
+          const existing = get().gameStarts[key]
+          if (existing) return existing
+          const now = Date.now()
+          set((s) => ({ gameStarts: { ...s.gameStarts, [key]: now } }))
+          return now
+        },
+
         recordGame: (game, metric, dnf) => {
           const s = get()
           const day = todayKey()
@@ -291,15 +309,8 @@ export const useStore = create<State & Actions>()(
     },
     {
       name: 'iqupid-v1',
-      partialize: ({ tab: _t, openChat: _o, newMatch: _n, toast: _to, ...rest }) => rest,
+      partialize: ({ tab: _t, openChat: _o, newMatch: _n, toast: _to, typing: _ty, ...rest }) => rest,
     },
   ),
 )
 
-/** Utility used by the profile screen to show who liked you. */
-export const likedYouProfiles = (s: State) =>
-  shuffle(mulberry32(7), Object.keys(s.likedYou))
-    .map((id) => PROFILE_BY_ID[id])
-    .filter(Boolean)
-
-export const clampIq = (x: number) => clamp(x, 60, 165)
